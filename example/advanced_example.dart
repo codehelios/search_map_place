@@ -4,16 +4,13 @@
 /// the screen is moved to the selected location, a path that demonstrates the route is created, and a "start route"
 /// box slides in to the screen.
 ///
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
-import 'package:search_map_place/search_map_place.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:search_map_place/search_map_place.dart';
 
 const String apiKEY = "";
 
@@ -137,18 +134,30 @@ class MapSampleState extends State<MapPage> with SingleTickerProviderStateMixin 
 
                 // Using the `flutter_polyline_points` library to get the needed data to create the path.
                 PolylinePoints polylineGetter = PolylinePoints();
-                List<PointLatLng> result = await polylineGetter.getRouteBetweenCoordinates(
-                  apiKEY,
-                  _initialCamera.target.latitude,
-                  _initialCamera.target.longitude,
-                  geolocation.coordinates.latitude,
-                  geolocation.coordinates.longitude,
-                );
+                PolylineResult result =
+                    await polylineGetter.getRouteBetweenCoordinates(
+                        apiKEY,
+                        PointLatLng(
+                          _initialCamera.target.latitude,
+                          _initialCamera.target.longitude,
+                        ),
+                        PointLatLng(
+                          geolocation.coordinates.latitude,
+                          geolocation.coordinates.longitude,
+                        ));
+                // List<PolylineResult> result = await polylineGetter.getRouteBetweenCoordinates(
+                //   apiKEY,
+                //   _initialCamera.target.latitude,
+                //   _initialCamera.target.longitude,
+                //   geolocation.coordinates.latitude,
+                //   geolocation.coordinates.longitude,
+                // );
 
                 List<LatLng> polylineCoordinates = [];
 
-                for (var point in result) {
-                  polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+                for (PointLatLng point in result.points) {
+                  polylineCoordinates
+                      .add(LatLng(point.latitude, point.longitude));
                 }
 
                 // Adding marker to the selected location using a custom icon.
